@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            height: 100vh;
+        }
+
+        .chat-users {
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .chat-messages {
+            height: calc(100vh - 150px);
+            overflow-y: auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+        }
+
+        .message {
+            margin: 10px 0;
+        }
+
+        .message-sent {
+            text-align: right;
+        }
+
+        .message-received {
+            text-align: left;
+        }
+
+        .message a {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.875rem;
+            color: #f8f9fa;
+        }
+
+        .list-group-item:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        .input-group input[type="text"] {
+            height: 50px;
+        }
+
+        .rounded-circle {
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row no-gutters">
+
+        <div class="col-md-3 bg-light border-end chat-users">
+            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                <img th:if="${currentUser != null and currentUser.personalPhoto?.id != null}"
+                     th:src="@{'/file/get/' + ${currentUser.personalPhoto.id}}"
+                     alt="My Photo"
+                     class="rounded-circle"
+                     style="width: 50px; height: 50px; margin-right: 15px;">
+                <th:block th:if="${currentUser != null}">
+                    <p><span th:text="${currentUser.getFirstName()}">First Name</span></p>
+                </th:block>
+                <a class="btn btn-danger btn-sm" href="/user/add">+ User</a>
+                <form action="/auth/logout" method="post" class="m-0">
+                    <button class="btn btn-danger btn-sm">Logout</button>
+                </form>
+
+                <a th:if="${currentUser != null}" class="btn btn-secondary btn-sm"
+                   th:href="@{/user/update/{id}(id=${currentUser.id})}">
+                    Settings
+                </a>
+
+
+
+            </div>
+
+            <h5 class="text-center py-3 border-bottom">Users</h5>
+            <ul class="list-group list-group-flush">
+                <a th:each="user:${users}" th:href="|?userId=${user.id}|">
+                    <li th:text="${user.getFullName()+'('+user.getUnread()+')'}"
+                        th:class="'list-group-item ' + (${selectedUser!= null && selectedUser.id==user.id ? 'bg-dark text-white' : ''})"></li>
+                </a>
+            </ul>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="col-md-9 d-flex flex-column" th:if="${selectedUser!=null}">
+            <div class="d-flex align-items-center p-3 bg-white border-bottom">
+                <img th:if="${selectedUser.getPersonalPhoto() != null}"
+                     th:src="@{'/file/get/' + ${selectedUser.getPersonalPhoto().id}}"
+                     alt="User Photo"
+                     class="rounded-circle"
+                     style="width: 50px; height: 50px; margin-right: 15px;">
+                <h5 class="mb-0" th:text="${selectedUser.getFirstName()}"></h5>
+            </div>
+
+            <div class="flex-grow-1 p-3 chat-messages">
+                <div th:each="message:${messages}"
+                     th:class="|message ${message.fromUser.id==selectedUser.id?'message-received':'message-sent'}|">
+                    <div th:class="|bg-${message.fromUser.id==selectedUser.id?'primary':'secondary'} text-white d-inline-block p-2 rounded|">
+                        <thblock th:text="${message.text}"></thblock>
+                        <a th:if="${message.file!=null}" th:href="|/file/download/${message.file.id}|"
+                           th:text="${message.file.getFileName()}"></a>
+                        <div><small class="text-light" th:text="${message.getDateTime()}"></small></div>
+                    </div>
+                </div>
+            </div>
+
+            <form action="/message/send" method="post" enctype="multipart/form-data" class="p-3 bg-white border-top">
+                <div class="input-group">
+                    <input type="hidden" name="to" th:value="${selectedUser.id}">
+                    <input autofocus type="text" name="text" class="form-control" placeholder="Type a message">
+                    <div class="input-group-append">
+                        <label class="btn btn-dark mb-0">
+                            File <input name="file" class="d-none" type="file">
+                        </label>
+                        <button class="btn btn-primary">Send</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .login-container {
+            margin-top: 20%;
+            max-width: 500px;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container d-flex justify-content-center align-items-center">
+    <div class="login-container">
+        <h3 class="text-center mb-4">Login</h3>
+        <form action="/auth/login" method="post">
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input type="text" class="form-control" id="phoneNumber" name="phone" placeholder="Enter phone number"
+                       required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password"
+                       autocomplete="current-password" required>
+            </div>
+            <button type="submit" class="btn btn-danger btn-block">Login</button>
+        </form>
+
+        <p class="text-center mt-3">
+            <a href="/auth/resetPassword">Forgot password?</a>
+        </p>
+    </div>
+</div>
+
+
+</body>
+</html>
+
+
